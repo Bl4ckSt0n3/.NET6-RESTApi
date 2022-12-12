@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using dotnet_test.Models;
+using dotnet_test.Services;
 
 namespace dotnet_test.Controllers;
 
@@ -27,10 +28,13 @@ public class UserController : ControllerBase
     /************************* OR **************************/
     private static List<User> userList = new List<User>();
     private readonly ILogger<UserController> _logger;
+    private readonly IUserService _userService;
 
-    public UserController(ILogger<UserController> logger)
+    public UserController(ILogger<UserController> logger, IUserService userService)
     {
+        // implementing interfaces
         _logger = logger;
+        _userService = userService;
 
         // creating a random list and return it.
         for (int i = 0; i < 10; i++)
@@ -51,6 +55,8 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("all")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public ActionResult<IEnumerable<User>> GetAll() 
     {
         // creating a random list and return it.
@@ -63,49 +69,59 @@ public class UserController : ControllerBase
         //     Username = "NewUser",
         //     CreateDate = DateTime.Now.AddDays(index),
         // }).ToArray();
-        return userList;
+
+        // calling the method from _userService interface  ---- https://exceptionnotfound.net/dependency-injection-in-dotnet-6-service-lifetimes/
+        return Ok(_userService.GetAll());
 
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("get/{id}")]
     public ActionResult<User> Get(int id)
     {
         
-        var usrObj = userList.FirstOrDefault(usr => usr.Id == id);
-        // Console.WriteLine(usrObj);
-        if (usrObj != null) 
-        {
-            return Ok(usrObj);
-        }
-        return BadRequest();
+        // var usrObj = userList.FirstOrDefault(usr => usr.Id == id);
+
+        // if (usrObj != null) 
+        // {
+        //     return Ok(usrObj);
+        // }
+        // return BadRequest();
+        return Ok(_userService.Get(id));
     }
 
     [HttpDelete("delete")]
-    public ActionResult<User> Remove (int id)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult Remove (int id)
     {
-        var usrLst = userList.Where<User>(usr => usr.Id != id);
+        var usrLst =  userList.Where<User>(usr => usr.Id != id);
         return Ok(usrLst);
     }
 
     [HttpPost("create")]
-    public ActionResult<User> Create (User newUser) 
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult Create (User newUser) // sync Action
     {
-        userList.Add(newUser);
-        return Ok(userList);
+        // userList.Add(newUser);
+        // return newUser == null ? BadRequest() : Ok(userList);
+        return _userService.Create(newUser) == null ? BadRequest() : Ok(_userService.Create(newUser));
     }
 
     [HttpPut("update")]
-    public ActionResult<User> Update (User uptdUser)
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update (User updtUser) // async call
     {
-        var userObject = userList.FirstOrDefault(usr => usr.Id == uptdUser.Id);
-        if (userObject != null) 
-        {
-            userObject.Name = uptdUser.Name;
-            userObject.SecondName = uptdUser.SecondName;
-            userObject.Age = uptdUser.Age;
-            userObject.Username = uptdUser.Username;
-            return Ok(userList);
-        }
-        return BadRequest();
+        // var userObject = userList.FirstOrDefault(usr => usr.Id == updtUser.Id);
+        // if (userObject != null) 
+        // {
+        //     userObject.Name = updtUser.Name;
+        //     userObject.SecondName = updtUser.SecondName;
+        //     userObject.Age = updtUser.Age;
+        //     userObject.Username = updtUser.Username;
+        //     return Ok(userList);
+        // }
+        return _userService.Update(updtUser) == null ? BadRequest() : Ok(_userService.Update(updtUser));
     }
 }
