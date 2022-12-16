@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using dotnet_test.Models;
+using dotnet_test.Models.Dtos;
 
 namespace dotnet_test.Services
 {
     public interface IUserService
     {
-        List<User> GetAll();
+        Task<List<User>> GetAll();
         User Get(int id);
-        List<User> Remove(int id);
-        List<User> Create (User newUser);
-        List<User> Update (User updtUser);
+        Task<List<User>> Remove(int id);
+        Task<CreateUser> Create (CreateUser newUser);
+        Task<User> Update (UpdateUser updateUser);
     }
 }

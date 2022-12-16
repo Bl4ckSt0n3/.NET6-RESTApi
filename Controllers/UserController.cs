@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using dotnet_test.Models;
 using dotnet_test.Services;
+using dotnet_test.Models.Dtos;
 
 namespace dotnet_test.Controllers;
 
@@ -57,21 +58,11 @@ public class UserController : ControllerBase
     [HttpGet("all")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<IEnumerable<User>> GetAll() 
+    public async Task<IActionResult> GetAll() 
     {
-        // creating a random list and return it.
-        // return Enumerable.Range(1, 9).Select(index => new User
-        // {
-        //     Id = index,
-        //     Name = Names[Random.Shared.Next(Names.Length)],
-        //     SecondName = secondNames[Random.Shared.Next(Names.Length)],
-        //     Age = Random.Shared.Next(18, 30),
-        //     Username = "NewUser",
-        //     CreateDate = DateTime.Now.AddDays(index),
-        // }).ToArray();
 
         // calling the method from _userService interface  ---- https://exceptionnotfound.net/dependency-injection-in-dotnet-6-service-lifetimes/
-        return Ok(_userService.GetAll());
+        return Ok(await _userService.GetAll());
 
     }
 
@@ -80,48 +71,30 @@ public class UserController : ControllerBase
     {
         
         // var usrObj = userList.FirstOrDefault(usr => usr.Id == id);
-
-        // if (usrObj != null) 
-        // {
-        //     return Ok(usrObj);
-        // }
-        // return BadRequest();
         return Ok(_userService.Get(id));
     }
 
     [HttpDelete("delete")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Remove (int id)
+    public async Task<IActionResult> Remove (int id)
     {
-        var usrLst =  userList.Where<User>(usr => usr.Id != id);
-        return Ok(usrLst);
+        return _userService.Remove(id) == null ? BadRequest() : Ok(await _userService.Remove(id));
     }
 
     [HttpPost("create")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreateUser))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult Create (User newUser) // sync Action
+    public async Task<IActionResult> Create (CreateUser newUser) // sync Action
     {
-        // userList.Add(newUser);
-        // return newUser == null ? BadRequest() : Ok(userList);
-        return _userService.Create(newUser) == null ? BadRequest() : Ok(_userService.Create(newUser));
+        return  _userService.Create(newUser) == null ? BadRequest() : Ok(await _userService.Create(newUser));
     }
 
     [HttpPut("update")]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UpdateUser))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update (User updtUser) // async call
+    public async Task<IActionResult> Update (UpdateUser updateUser) // async call
     {
-        // var userObject = userList.FirstOrDefault(usr => usr.Id == updtUser.Id);
-        // if (userObject != null) 
-        // {
-        //     userObject.Name = updtUser.Name;
-        //     userObject.SecondName = updtUser.SecondName;
-        //     userObject.Age = updtUser.Age;
-        //     userObject.Username = updtUser.Username;
-        //     return Ok(userList);
-        // }
-        return _userService.Update(updtUser) == null ? BadRequest() : Ok(_userService.Update(updtUser));
+        return _userService.Update(updateUser) == null ? BadRequest() : Ok(await _userService.Update(updateUser));
     }
 }

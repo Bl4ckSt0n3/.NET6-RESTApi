@@ -2,6 +2,7 @@
 using dotnet_test.Models;
 using dotnet_test.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,15 +12,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// add dependencies
+//************* add all dependencies ***************//
+
 // scoped
 builder.Services.AddScoped<IUserService, UserService>();
 
 
-// Add database connection for postgresql // run 'dotnet ef database update' if you've changed the table 
-builder.Services.AddEntityFrameworkNpgsql().AddDbContext<UserContext>(options => { //
+// Add database connection for postgresql 
+// run 'dotnet ef database update' if you've changed the table 
+builder.Services.AddDbContext<UserContext>(options => { //
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+// add automapper to the DI container
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
