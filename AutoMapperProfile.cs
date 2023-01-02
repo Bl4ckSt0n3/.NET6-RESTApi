@@ -10,6 +10,11 @@ namespace dotnet_test
         public AutoMapperProfile()
         {
             CreateMap<User, CreateUser>().ReverseMap();
+            CreateMap<User, GetUser>().ReverseMap();
+            CreateMap<GetUser, User>().ReverseMap();
+            CreateMap<CreateUser, GetUser>().ReverseMap();
+            CreateMap<GetUser, CreateUser>().ReverseMap();
+            CreateMap<CreateUser, User>().ReverseMap();
             CreateMap<User, UpdateUser>().ReverseMap();
         }
     }

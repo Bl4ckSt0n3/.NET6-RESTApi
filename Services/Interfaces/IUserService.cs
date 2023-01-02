@@ -9,10 +9,10 @@ namespace dotnet_test.Services
 {
     public interface IUserService
     {
-        Task<List<User>> GetAll();
-        User Get(int id);
-        Task<List<User>> Remove(int id);
-        Task<CreateUser> Create (CreateUser newUser);
-        Task<User> Update (UpdateUser updateUser);
+        Task<ServiceResponse<List<GetUser>>> GetAll();
+        Task<ServiceResponse<GetUser>> Get(int id);
+        Task<ServiceResponse<List<GetUser>>> Remove(int id);
+        Task<ServiceResponse<List<GetUser>>> Create (CreateUser newUser);
+        Task<ServiceResponse<List<GetUser>>> Update (UpdateUser updateUser);
     }
 }

@@ -38,21 +38,21 @@ public class UserController : ControllerBase
         _userService = userService;
 
         // creating a random list and return it.
-        for (int i = 0; i < 10; i++)
-        {
-            userList.Add
-            (
-                new User
-                {
-                    Id = i,
-                    Name = Names[Random.Shared.Next(Names.Length)],
-                    SecondName = secondNames[Random.Shared.Next(Names.Length)],
-                    Age = Random.Shared.Next(18, 30),
-                    Username = "NewUser",
-                    CreateDate = DateTime.Now,
-                }
-            );
-        }
+        // for (int i = 0; i < 10; i++)
+        // {
+        //     userList.Add
+        //     (
+        //         new User
+        //         {
+        //             Id = i,
+        //             Name = Names[Random.Shared.Next(Names.Length)],
+        //             SecondName = secondNames[Random.Shared.Next(Names.Length)],
+        //             Age = Random.Shared.Next(18, 30),
+        //             Username = "NewUser",
+        //             CreateDate = DateTime.Now,
+        //         }
+        //     );
+        // }
     }
 
     [HttpGet("all")]
@@ -67,11 +67,11 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("get/{id}")]
-    public ActionResult<User> Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
         
         // var usrObj = userList.FirstOrDefault(usr => usr.Id == id);
-        return Ok(_userService.Get(id));
+        return _userService.Get(id) == null ? BadRequest() : Ok(await _userService.Get(id));
     }
 
     [HttpDelete("delete")]
@@ -85,7 +85,7 @@ public class UserController : ControllerBase
     [HttpPost("create")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreateUser))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Create (CreateUser newUser) // sync Action
+    public async Task<IActionResult> Create (CreateUser newUser)
     {
         return  _userService.Create(newUser) == null ? BadRequest() : Ok(await _userService.Create(newUser));
     }
