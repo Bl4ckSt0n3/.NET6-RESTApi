@@ -67,11 +67,13 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("get/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(int id)
     {
         
         // var usrObj = userList.FirstOrDefault(usr => usr.Id == id);
-        return _userService.Get(id) == null ? BadRequest() : Ok(await _userService.Get(id));
+        return _userService.Get(id) is not null ? Ok(await _userService.Get(id)) : BadRequest();
     }
 
     [HttpDelete("delete")]

@@ -22,7 +22,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 // run 'dotnet ef database update' if you've changed the table 
 builder.Services.AddDbContext<UserContext>(options => { //
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+}, ServiceLifetime.Transient);
 
 // add automapper to the DI container
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

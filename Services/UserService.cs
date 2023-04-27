@@ -93,7 +93,7 @@ namespace dotnet_test.Services
             ServiceResponse<GetUser> serviceResponse = new ServiceResponse<GetUser>();
             // var usrObj = userList.FirstOrDefault(usr => usr.Id == id);
             // return usrObj != null ? usrObj : new User(); // return null user
-            User user = await _userContext.Users.FirstAsync(usr => usr.Id == id);
+            User? user = await _userContext.Users.FirstOrDefaultAsync(usr => usr.Id == id);
             try
             {
                 serviceResponse.Data = _mapper.Map<GetUser>(user);
